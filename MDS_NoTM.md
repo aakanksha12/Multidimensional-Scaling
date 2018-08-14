@@ -8,7 +8,7 @@ output:
 
 R script to create Multidimesional Scaling plot for different amino acid excahnge matices
 
-###Step1: Load data 
+#Step1: Load data 
 Load your data into R. Here, I have a 38 X 38 matrix of euclidean distances between different amino acid exchange rate matrices
 
 
@@ -96,7 +96,7 @@ head(mydata)
 ## COIL_BUR_choanozoa 0.10485032 0.09784613 0.1799498
 ## COIL_EXP           0.12737815 0.10482439 0.1980667
 ```
-###Step2: Fit cmdscale function
+#Step2: Fit cmdscale function
 Here I used cmdscal scale function for dimension reduction in 2 coordinates
 
 
@@ -131,7 +131,7 @@ text(coordinate1, coordinate2, pos=3,labels = row_lable, cex=0.4,col = "Black")
 ![](MDS_NoTM_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 
-###Step4: Plot coordinates from cmdscale using ggplot
+#Step4: Plot coordinates from cmdscale using ggplot
 Here I used ggplot for better visulatization. I also colored the datapoints based on groups of exchange rate matrices
 
 
