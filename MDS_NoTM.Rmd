@@ -1,0 +1,55 @@
+# Multidimensional scaling plot
+R script to create Multidimesional Scaling plot for different amino acid excahnge matices
+
+###Step1: Load data 
+Load your data into R. Here, I have a 38 X 38 matrix of euclidean distances between different amino acid exchange rate matrices
+
+
+```{r}
+# Classical MDS
+# N rows (objects) x p columns (variables)
+# each row identified by a unique row name
+
+row_lable <- c('BUR','BUR_choanozoa', 'COIL' ,'COIL_BUR' ,'COIL_BUR_choanozoa' ,'COIL_EXP' ,'COIL_EXP_choanozoa' ,'COIL_choanozoa' ,'DAYHOFF-dcmut' ,'EXP' ,'EXP_choanozoa' ,'FLU' ,'HELIX' ,'HELIX_BUR' ,'HELIX_BUR_choanozoa' ,'HELIX_EXP' ,'HELIX_EXP_choanozoa' ,'HELIX_choanozoa' ,'HIVb' ,'HIVw' ,'JONES-dcmut' ,'JTTtm' ,'LG' ,'SHEET' ,'SHEET_BUR' ,'SHEET_BUR_choanozoa' ,'SHEET_EXP' ,'SHEET_EXP_choanozoa' ,'SHEET_choanozoa' ,'VT' ,'WAG' ,'blosum', 'cpREV' ,'mtART' ,'mtMAM' ,'mtREV24', 'mtZOA' ,'rtREV')
+
+mydata <- read.csv("final_aa_mat.csv",header = TRUE,sep =  "\t", as.is = TRUE ,row.names = row_lable )#read the csv file for disimmilarity matrix 
+head(mydata)
+```
+###Step2: Fit cmdscale function
+Here I used cmdscal scale function for dimension reduction in 2 coordinates
+
+```{r}
+fit <- cmdscale(mydata, k=2, eig = FALSE)
+fit.frame <- data.frame(fit)
+head(fit.frame)
+```
+###Step3: Plot coordinates from cmdscale function using plot function
+
+```{r}
+# plot solution 
+coordinate1 <- fit.frame[,1]
+coordinate2 <- fit.frame[,2]
+
+rainbow1<-rainbow(38)
+plot(coordinate1, coordinate2, xlab="Coordinate 1", ylab="Coordinate 2", main="MDS for Amino acid exchange rates",	type="p", pch=19,col=rainbow1, cex.main=0.7, las=1, bty="n" )
+text(coordinate1, coordinate2, pos=3,labels = row_lable, cex=0.4,col = "Black")
+
+```
+
+
+###Step4: Plot coordinates from cmdscale using ggplot
+Here I used ggplot for better visulatization. I also colored the datapoints based on groups of exchange rate matrices
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(RColorBrewer)
+fit.frame$bio <- c(row_lable)
+head(mutate(fit.frame, grepl("EXP", bio)))
+fit.frame$col_bio <- ifelse(grepl("EXP",fit.frame$bio), 1, ifelse(grepl("BUR", fit.frame$bio), 2, ifelse(grepl("HELIX", fit.frame$bio), 3, ifelse(grepl("SHEET", fit.frame$bio), 3, ifelse(grepl("COIL", fit.frame$bio), 3, 4)))))
+fit.frame$col_bio <- as.factor(fit.frame$col_bio)
+plot1 <- ggplot(fit.frame, aes(coordinate1,coordinate2,label = c(row_lable), color = col_bio)) + geom_point() +geom_text(check_overlap = TRUE, size=2, vjust =1.4, hjust = 1) +  scale_colour_brewer("Amino acid matrix categories", palette="Dark2",type = "diverging", direction = 1, labels = c('Exposed','Buried','Secondary Structure','Standard Models')) + theme_minimal()
+print(plot1)
+
+```
+
